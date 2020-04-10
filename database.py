@@ -3,6 +3,8 @@ import mysql.connector
 
 from account import *
 from profile import *
+from goal import *
+from data_visualisation import *
 
 DB_HOST_NAME = "localhost"
 DB_USER_NAME = "root"
@@ -231,12 +233,7 @@ def display_all_badges():
   results = cursor.fetchall()
   db.close()
 
-  if len(results) > 0:
-    for result in results:
-      print(result)
-  else:
-    print("ERROR - Could not find badges")
-    print()
+  print_badges(results)
 
 
 """
@@ -254,8 +251,8 @@ def display_user_badges(id):
       SELECT achieved_badges.badge_id, achieved_badges.account_id
       FROM achieved_badges
     ) AS user_badges
-    WHERE badges.badge_id = achieved_badges.badge_id
-    AND achieved_badges.account_id = %s
+    WHERE badges.badge_id = user_badges.badge_id
+    AND user_badges.account_id = %s
   """ % id
 
   db = connect()
@@ -264,12 +261,7 @@ def display_user_badges(id):
   results = cursor.fetchall()
   db.close()
 
-  if len(results) > 0:
-    for result in results:
-      print(result)
-  else:
-    print("ERROR - Could not find badges")
-    print()
+  print_badges(results)
 
 
 def display_user_goals(id):
@@ -277,6 +269,19 @@ def display_user_goals(id):
   print()
   print("Your goals")
   print()
+
+  query = """
+    SELECT * FROM current_goals
+    WHERE account_id = %s
+  """ % id
+
+  db = connect()
+  cursor = db.cursor()
+  cursor.execute(query)
+  results = cursor.fetchall()
+  db.close()
+
+  print_goal_table(results)
 
 
 """
@@ -293,4 +298,35 @@ def display_leadboard(id):
   Creates a user goal.
 """
 def create_user_goal(target, metric, start_date, end_date, interval, id):
-  pass
+  
+  sql = """
+    INSERT INTO current_goals (target, metric, start_date, end_date, set_interval, account_id)
+    VALUES (%s, %s, %s, %s, %s, %s)
+  """
+
+  values = (str(target), str(metric), str(start_date), str(end_date), str(interval), str(id))
+
+  db = connect()
+  cursor = db.cursor()
+  cursor.execute(sql, values)
+  db.commit()
+  db.close()
+
+
+"""
+  Creates a user goal.
+"""
+def award_badge(id, badge_id):
+  
+  sql = """
+    INSERT INTO achieved_badges (account_id, badge_id)
+    VALUES (%s, %s)
+  """
+
+  values = (str(id), str(badge_id))
+
+  db = connect()
+  cursor = db.cursor()
+  cursor.execute(sql, values)
+  db.commit()
+  db.close()

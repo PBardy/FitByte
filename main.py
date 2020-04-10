@@ -33,6 +33,23 @@ def add_user_goal(id):
 
     metric = get_menu_choice(8)
 
+    if metric == 1:
+      metric = "energy_intake"
+    elif metric == 2:
+      metric = "fat_intake"
+    elif metric == 3:
+      metric = "fibre_intake"
+    elif metric == 4:
+      metric = "protein_intake"
+    elif metric == 5:
+      metric = "salt_intake"
+    elif metric == 6:
+      metric == "sugar_intake"
+    elif metric == 7:
+      metric = "weight"
+    elif metric == 8:
+      return 
+
     target = get_float("Target: ", 0, 100000)
     
     valid = False
