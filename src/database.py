@@ -73,16 +73,17 @@ def create_account(username, salt, hash):
 
 
 """
-  Inserts an entry into a particular table 
+  Inserts personal informatics data into its
+  respective table.
 """
-def create_personal_informatics_entry(table, id, date, value):
+def create_personal_informatics_entry(id, date, value, table):
 
   sql = """
-    INSERT INTO %s (account_id, date, value)
+    INSERT INTO """ + table + """ (account_id, date, value) 
     VALUES (%s, %s, %s)
   """
 
-  values = (str(table), str(id), str(date), str(value))
+  values = (str(id), str(date), str(value))
 
   db = connect()
   cursor = db.cursor()
@@ -264,7 +265,7 @@ def display_user_badges(id):
   print_badges(results)
 
 
-def display_user_goals(id):
+def get_user_goal_data(id):
   
   print()
   print("Your goals")
@@ -281,7 +282,7 @@ def display_user_goals(id):
   results = cursor.fetchall()
   db.close()
 
-  print_goal_table(results)
+  return results
 
 
 """
@@ -330,3 +331,25 @@ def award_badge(id, badge_id):
   cursor.execute(sql, values)
   db.commit()
   db.close()
+
+
+"""
+  Retrieves all data pertaining to a
+  particular account. 
+"""
+def get_all_data(id, table):
+  
+  sql = """
+    SELECT date, value
+    FROM """ + table + """
+    WHERE account_id = %s
+  """ % id
+  
+  db = connect()
+  cursor = db.cursor()
+  cursor.execute(sql)
+  results = cursor.fetchall()
+  db.close()
+
+  return table, results
+

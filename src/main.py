@@ -1,5 +1,6 @@
 from database import *
 from input_validation import *
+from calculations import *
 from account import *
 from profile import *
 
@@ -7,6 +8,35 @@ MAX_NAME_LENGTH = 35
 MAX_USERNAME_LENGTH = 32
 MAX_PASSWORD_LENGTH = 72
 MIN_PASSWORD_LENGTH = 6
+
+
+"""
+  Displays user goals, including whether they
+  have been achieved. 
+"""
+def display_user_goals(id):
+
+  goals = get_user_goal_data(id)
+  
+  entries = []
+  now = datetime.datetime.now()
+
+  for goal in goals:
+    goal_obj = make_goal(goal)
+    metric = goal_obj.get_metric()
+    start = goal_obj.get_start_date()
+    end = goal_obj.get_end_date()
+    target = goal_obj.get_target()
+    interval = goal_obj.get_interval()
+    table, tracked = get_all_data(id, metric)
+    relevant = [val for val in tracked if val[0] > start and val[0] < end]
+    achieved = len([val for val in tracked if val[1] <= target]) > 0
+    data_completion = len(relevant) / interval
+    goal_obj.set_completion(data_completion)
+    goal_obj.set_achieved(achieved)
+    entries.append(goal_obj.get_properties())
+
+  display_goals(entries)
 
 
 """
@@ -56,15 +86,30 @@ def add_user_goal(id):
 
     while not valid:
 
-      start_date = get_date("Track from (start date): ")
-      end_date = get_date("Track until (end date): ")
+      # Get date strings
+      sta = get_date("Track from  (start date): ")
+      end = get_date("Track until (end date):   ")
 
-      if start_date < end_date:
-        valid = True
+      # For comparison, convert to datetime objects
+      date_a = datetime.datetime.strptime(sta, "%Y-%m-%d")
+      date_b = datetime.datetime.strptime(end, "%Y-%m-%d")
+
+      if date_a < date_b:
+        now = datetime.datetime.now()
+        if date_a > now and date_b > now:
+          valid = True
+        else:
+          print()
+          print("Dates must be in the future")
+          print()
+      else:
+        print()
+        print("Start date must be before end date")
+        print()
     
     interval = get_float("Check progress how many times? ", 1, 10)
 
-    create_user_goal(target, metric, start_date, end_date, interval, id)
+    create_user_goal(target, metric, sta, end, interval, id)
 
 
 """
@@ -131,50 +176,23 @@ def edit_profile_menu(id):
   change_profile_details(first_name, last_name, dob, current_weight, height, sex, activity_rating)
 
 
+"""
+  Retrieves and displays all personal informatics
+  data pertaining to a particular account. 
+"""
 def view_all_data_menu(id):
-  pass
+  
+  print()
+  print("Displaying all data")
+  print()
 
-
-"""
-  Calculates a person's BMR using the Mifflin-St Jeor 
-  equation.
-"""
-def mifflin_st_jeor(weight, height, age, sex):
-
-  if sex.lower() == "m":
-    return (10 * weight) + (6.25 * height) - (5 * age) + 5
-  if sex.lower() == "f":
-    return (10 * weight) + (6.25 * height) - (5 * age) - 161
-
-
-"""
-  Calculates a person's BMR using the revised Harris-Benedict 
-  equation.
-"""
-def revised_harris_benedict(weight, height, age, sex):
-
-  if sex.lower() == "m":
-    return (13.397 * weight) + (4.799 * height) - (5.677 * age) + 88.362
-  if sex.lower() == "f":
-    return (9.247 * weight) + (3.098 * height) - (4.330 * age) + 447.593
-
-
-"""
-  Returns the number of calories a person should consume daily to maintain
-  their BMR for different activity levels.
-"""
-def calories_for_activity_level(activity_level):
-
-  if activity_level == 1:
-    return 2378
-  if activity_level == 2:
-    return 2724
-  if activity_level == 3:
-    return 2903
-  if activity_level == 4:
-    return 3071
-  if activity_level == 5:
-    return 3418
+  print_all_data(get_all_data(id, "energy_intake"))
+  print_all_data(get_all_data(id, "fat_intake"))
+  print_all_data(get_all_data(id, "fibre_intake"))
+  print_all_data(get_all_data(id, "protein_intake"))
+  print_all_data(get_all_data(id, "salt_intake"))
+  print_all_data(get_all_data(id, "sugar_intake"))
+  print_all_data(get_all_data(id, "weight"))
 
 
 """
@@ -205,11 +223,9 @@ def view_my_bmr(id):
   print("Based on your activity level you need %s Calories/day" %cpd)
 
 
-def create_graph(metric, timescale):
-  pass
-
-
 def view_my_graphs_menu(id):
+
+  metrics = ["Calories", "Fat", "Fibre", "Protein", "Salt", "Sugar", "Weight"]
   
   while True:
 
@@ -243,7 +259,7 @@ def view_my_graphs_menu(id):
 
     timescale = get_menu_choice(4)
 
-    create_graph(metric, timescale)
+    create_graph(get_data_points(get_all_data(id, metrics[metric - 1])))
 
 
 def add_informatics_data(id):
@@ -268,9 +284,34 @@ def add_informatics_data(id):
 
     if choice == 1:
       calories = get_calories()
+      create_personal_informatics_entry(id, date, calories, 'energy_intake')
+
+    if choice == 2:
+      fat = get_float("Fat (grams): ", 0, 1000)
+      create_personal_informatics_entry(id, date, fat, 'fat_intake')
+
+    if choice == 3:
+      fibre = get_float("Fibre (grams): ", 0, 1000)
+      create_personal_informatics_entry(id, date, fibre, 'fibre_intake')
+
+    if choice == 4:
+      protein = get_float("Protein (grams): ", 0, 1000)
+      create_personal_informatics_entry(id, date, protein, 'protein_intake')
+
+    if choice == 5:
+      salt = get_float("Salt (grams): ", 0, 1000)
+      create_personal_informatics_entry(id, date, salt, 'salt_intake')
+
+    if choice == 6:
+      sugar = get_float("Sugar (grams): ", 0, 1000)
+      create_personal_informatics_entry(id, date, sugar, 'sugar_intake')
 
     if choice == 7:
-      weight = get_weight()       
+      weight = get_weight()  
+      create_personal_informatics_entry(id, date, weight, 'weight')     
+    
+    if choice == 8:
+      return 
 
 
 def my_personal_data_menu(id):

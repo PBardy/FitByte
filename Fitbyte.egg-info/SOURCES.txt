@@ -1,0 +1,7 @@
+README.md
+setup.py
+Fitbyte.egg-info/PKG-INFO
+Fitbyte.egg-info/SOURCES.txt
+Fitbyte.egg-info/dependency_links.txt
+Fitbyte.egg-info/requires.txt
+Fitbyte.egg-info/top_level.txt

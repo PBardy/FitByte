@@ -7,6 +7,8 @@ class Goal:
     self.__end_date = end_date
     self.__interval = interval
     self.__id = id
+    self.__completion = 0
+    self.__achieved = False
 
   def __repr__(self):
     return "Goal"
@@ -18,7 +20,9 @@ class Goal:
       str(self.__start_date),
       str(self.__end_date),
       str(self.get_goal_duration()),
-      str(self.__interval)
+      str(self.__interval),
+      str(self.__completion),
+      str(self.__achieved)
     ]
     
     return properties
@@ -30,7 +34,7 @@ class Goal:
     return self.__metric
 
   def get_start_date(self):
-    return self.__state_date
+    return self.__start_date
     
   def get_end_date(self):
     return self.__end_date
@@ -47,8 +51,20 @@ class Goal:
   def get_account_id(self):
     return self.get_id()
 
+  def get_completion(self):
+    return self.__completion
+
   def get_goal_duration(self):
     return (self.__end_date - self.__start_date).days
+
+  def get_achieved(self):
+    return self.__achieved
+
+  def set_completion(self, perc):
+    self.__completion = perc
+
+  def set_achieved(self, status):
+    self.__achieved = status
 
 
 def make_goal(db_entry):
