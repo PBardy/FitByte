@@ -64,6 +64,7 @@ def display_goals(goal_data):
   headers = ["Target", "Metric", "Start Date", "End Date", "Duration", "Checkups", "Data Completion %", "Achieved"]
   
   if len(goal_data) > 0:
+    
     tabulated = tabulate(goal_data, headers=headers, showindex="always")
     
     print()
@@ -74,3 +75,5 @@ def display_goals(goal_data):
     print()
     print("No goals to display")
     print()
+  
+  

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2020 at 03:42 PM
+-- Generation Time: Apr 18, 2020 at 09:25 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.2
 
@@ -36,6 +36,13 @@ CREATE TABLE `accounts` (
   `date_created` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `accounts`
+--
+
+INSERT INTO `accounts` (`account_id`, `username`, `password_salt`, `password_hash`, `date_created`) VALUES
+(1, 'testuser', '$2b$12$zqGhGcF..', '$2b$12$zqGhGcF..kAFui9WCMBwreQmV16M5y.euavA06hQ5gsWUdsYySRXm', '2020-04-15 00:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -59,6 +66,14 @@ CREATE TABLE `badges` (
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `badges`
+--
+
+INSERT INTO `badges` (`badge_id`, `description`) VALUES
+(1, 'First Goal - Successfully complete one goal'),
+(2, 'Goals, goals, goals - Successfully complete 5 goals');
+
 -- --------------------------------------------------------
 
 --
@@ -74,6 +89,13 @@ CREATE TABLE `current_goals` (
   `set_interval` float NOT NULL,
   `account_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `current_goals`
+--
+
+INSERT INTO `current_goals` (`goal_id`, `target`, `metric`, `start_date`, `end_date`, `set_interval`, `account_id`) VALUES
+(1, 80, 'weight', '2020-04-16', '2020-05-01', 7, 1);
 
 -- --------------------------------------------------------
 
@@ -132,6 +154,13 @@ CREATE TABLE `profiles` (
   `activity_rating` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `profiles`
+--
+
+INSERT INTO `profiles` (`profile_id`, `account_id`, `first_name`, `last_name`, `DOB`, `current_weight`, `height`, `sex`, `activity_rating`) VALUES
+(1, 1, 'Philip', '', '2000-10-26', 80, 100, 'm', 3);
+
 -- --------------------------------------------------------
 
 --
@@ -183,6 +212,17 @@ CREATE TABLE `weight` (
   `date` date NOT NULL,
   `value` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `weight`
+--
+
+INSERT INTO `weight` (`account_id`, `entry_id`, `date`, `value`) VALUES
+(1, 1, '2020-04-14', 80),
+(1, 2, '2020-04-07', 78),
+(1, 3, '2020-03-29', 80),
+(1, 6, '2020-04-17', 78),
+(1, 7, '2020-04-15', 80);
 
 --
 -- Indexes for dumped tables
@@ -268,7 +308,7 @@ ALTER TABLE `weight`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `account_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `achieved_badges`
@@ -280,13 +320,13 @@ ALTER TABLE `achieved_badges`
 -- AUTO_INCREMENT for table `badges`
 --
 ALTER TABLE `badges`
-  MODIFY `badge_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `badge_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `current_goals`
 --
 ALTER TABLE `current_goals`
-  MODIFY `goal_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `goal_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `energy_intake`
@@ -305,6 +345,12 @@ ALTER TABLE `fat_intake`
 --
 ALTER TABLE `fibre_intake`
   MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `profiles`
+--
+ALTER TABLE `profiles`
+  MODIFY `profile_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `protein_intake`
@@ -328,7 +374,7 @@ ALTER TABLE `sugar_intake`
 -- AUTO_INCREMENT for table `weight`
 --
 ALTER TABLE `weight`
-  MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

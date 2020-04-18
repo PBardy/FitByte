@@ -3,12 +3,12 @@ from input_validation import *
 from calculations import *
 from account import *
 from profile import *
+from goal import *
 
 MAX_NAME_LENGTH = 35
 MAX_USERNAME_LENGTH = 32
 MAX_PASSWORD_LENGTH = 72
 MIN_PASSWORD_LENGTH = 6
-
 
 """
   Displays user goals, including whether they
@@ -19,10 +19,12 @@ def display_user_goals(id):
   goals = get_user_goal_data(id)
   
   entries = []
+  goal_objs = []
   now = datetime.datetime.now()
 
   for goal in goals:
     goal_obj = make_goal(goal)
+    goal_objs.append(goal_obj)
     metric = goal_obj.get_metric()
     start = goal_obj.get_start_date()
     end = goal_obj.get_end_date()
@@ -37,6 +39,8 @@ def display_user_goals(id):
     entries.append(goal_obj.get_properties())
 
   display_goals(entries)
+
+  return goal_objs
 
 
 """
@@ -121,7 +125,20 @@ def edit_user_goal(id):
   print("Edit a goal")
   print()
 
-  display_user_goals(id)
+  all_goals = display_user_goals(id)
+
+  if len(all_goals) > 0:
+    print()
+    print("Index to edit")
+    print()
+    index = get_menu_choice(len(all_goals) - 1, min_choice = 0)
+    goal = all_goals[index]
+    update_goal(goal)    
+
+  else:
+    print()
+    print("There are no goals to edit")
+    print()
 
 
 """
@@ -267,53 +284,43 @@ def add_informatics_data(id):
   while True:
 
     print()
-    print("Add informatics data")
+    print("Add informatics data about")
     print()
-    print("1. Add calorie information")
-    print("2. Add fat information")
-    print("3. Add fibre information")
-    print("4. Add protein information")
-    print("5. Add salt information")
-    print("6. Add sugar information")
-    print("7. Add weight information")
-    print("8. Return")
+    choice, table = get_metric()
     print()
 
-    choice = get_menu_choice(8)
+    if choice == 8:
+      return
+
     date = get_date("When did you record this data? ")
 
     if choice == 1:
-      calories = get_calories()
-      create_personal_informatics_entry(id, date, calories, 'energy_intake')
+      value = get_calories()
 
     if choice == 2:
       fat = get_float("Fat (grams): ", 0, 1000)
-      create_personal_informatics_entry(id, date, fat, 'fat_intake')
 
     if choice == 3:
       fibre = get_float("Fibre (grams): ", 0, 1000)
-      create_personal_informatics_entry(id, date, fibre, 'fibre_intake')
 
     if choice == 4:
       protein = get_float("Protein (grams): ", 0, 1000)
-      create_personal_informatics_entry(id, date, protein, 'protein_intake')
 
     if choice == 5:
       salt = get_float("Salt (grams): ", 0, 1000)
-      create_personal_informatics_entry(id, date, salt, 'salt_intake')
 
     if choice == 6:
       sugar = get_float("Sugar (grams): ", 0, 1000)
-      create_personal_informatics_entry(id, date, sugar, 'sugar_intake')
 
     if choice == 7:
-      weight = get_weight()  
-      create_personal_informatics_entry(id, date, weight, 'weight')     
-    
-    if choice == 8:
-      return 
+      weight = get_weight()   
 
+    create_personal_informatics_entry(id, date, value, table)
 
+""" 
+  Allows user to navigate to the view all data,
+  view BMR, view graphs or add data menus. 
+"""
 def my_personal_data_menu(id):
   
   while True:

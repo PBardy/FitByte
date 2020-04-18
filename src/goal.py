@@ -1,6 +1,10 @@
+from input_validation import *
+from database import *
+
 class Goal:
 
-  def __init__(self, target, metric, start_date, end_date, interval, id):
+  def __init__(self, entryid, target, metric, start_date, end_date, interval, id):
+    self.__entryid = entryid
     self.__target = target
     self.__metric = metric
     self.__start_date = start_date
@@ -26,6 +30,9 @@ class Goal:
     ]
     
     return properties
+
+  def get_entryid(self):
+    return self.__entryid
 
   def get_target(self):
     return self.__target
@@ -60,6 +67,21 @@ class Goal:
   def get_achieved(self):
     return self.__achieved
 
+  def set_target(self, target):
+    self.__target = target
+
+  def set_metric(self, metric):
+    self__metric = metric
+
+  def set_start_date(self, start_date):
+    self.__start_date = start_date
+
+  def set_end_date(self, end_date):
+    self.__end_date = end_date
+
+  def set_interval(self, interval):
+    self.__interval
+
   def set_completion(self, perc):
     self.__completion = perc
 
@@ -67,5 +89,61 @@ class Goal:
     self.__achieved = status
 
 
+"""
+  Prompts the user to edit each field
+  of a goal, and update accordingly.
+"""
+def update_goal(goal):
+  
+  print()
+  print("For each part, leave blank if you want to keep the value the same.")
+
+  # Prompt user to edit target information
+
+  print()
+  target = get_float("Target: ", 0, 10000, allowEmpty = True)
+  print()
+
+  # Prompt user to edit metric info
+   
+  print()
+  print("Metric")
+  print()
+  metric, metric_table, metric_name = get_metric(allowReturn = -1, allowEmpty = True)
+
+  # Prompt user to edit start date info
+
+  print()
+  start_date = get_date("Start date: ", allowEmpty = True)
+  print()
+
+  # Prompt user to edit end data info
+
+  print()
+  end_date = get_date("End date: ", allowEmpty = True)
+  print()
+
+  # Prompt the user to edit the interval data
+
+  print()
+  print("Interval")
+  print()
+
+  # Update goal entry locally
+
+  if target != "":
+    goal.set_target(target)
+
+  if metric != "":
+    goal.set_metric(metric)
+
+  # Push changes to the database
+
+
+
+"""
+  Converts a database entry (represented as a 
+  tuple of fields) into a goal object. 
+"""
 def make_goal(db_entry):
-  return Goal(db_entry[1], db_entry[2], db_entry[3], db_entry[4], db_entry[5], db_entry[6])
+  return Goal(db_entry[0], db_entry[1], db_entry[2], db_entry[3], db_entry[4], db_entry[5], db_entry[6])

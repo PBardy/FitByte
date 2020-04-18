@@ -353,3 +353,10 @@ def get_all_data(id, table):
 
   return table, results
 
+
+"""
+  Update a particular goal entry with
+  new values.
+"""
+def update_goal_entry(goal):
+  pass

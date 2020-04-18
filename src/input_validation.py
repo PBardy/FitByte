@@ -4,17 +4,61 @@ POUNDS_TO_KILO_RATIO = 1/2.205
 CM_TO_INCHES_RATIO = 1/2.54
 KCAL_TO_KJ_RATIO = 1/4.184
 
-def get_menu_choice(choices):
+"""
+  Prompts user to enter a metric and returns
+  the associated table with that metric. By 
+  setting allowReturn to -1, the option to 
+  return is left off. 
+"""
+def get_metric(allowReturn = 0, allowEmpty = False):
+
+  metric_tables = [
+    ('Calories', 'energy_intake'),
+    ('Fat', 'fat_intake'),
+    ('Fibre', 'fibre_intake'),
+    ('Protein', 'protein_intake'),
+    ('Salt', 'salt_intake'),
+    ('Sugar', 'sugar_intake'),
+    ('Weight', 'weight'),
+    ('Return', None)
+  ]
+
+  choices = len(metric_tables) + allowReturn
+
+  for i in range(0, choices):
+    print("%d. %s" % (i + 1, metric_tables[i][0]))
+
+  metric = get_menu_choice(choices, allowEmpty = allowEmpty)
+
+  if metric != "":
+    metric_name = metric_tables[metric - 1][0]
+    metric_tble = metric_tables[metric - 1][1]
+  else:
+    metric_name = None
+    metric_tble = None
+
+  return metric, metric_tble, metric_name
+
+
+"""
+  Prompts user to enter a number corresponding
+  to a menu choice. 
+"""
+def get_menu_choice(choices, min_choice = 1, allowEmpty = False):
 
   while True:
     try:
-      choice = int(input(":"))
+      raw = input(":")
+      choice = int(raw)
     except ValueError:
-      print("Invalid choice")
-      print()
-      continue
+      if allowEmpty and raw == "":
+        return raw
+      else:
+        print("Invalid choice")
+        print()
+        continue
     else:
-      if choice not in range(1, choices + 1):
+      if choice not in range(min_choice, choices + 1):
         print("Invalid choice")
         print()
         continue
@@ -22,14 +66,22 @@ def get_menu_choice(choices):
         return choice
 
 
-def get_float(prompt, min, max):
+"""
+  Prompts the user to enter a float between
+  a minimum and maximum value.
+"""
+def get_float(prompt, min, max, allowEmpty = False):
   
   while True:
     try:
-      choice = float(input(prompt))
+      raw = input(prompt)
+      choice = float(raw)
     except ValueError:
-      print("Input must be a decimal number")
-      print()
+      if allowEmpty and raw == "":
+        return raw
+      else:
+        print("Input must be a decimal number")
+        print()
     else:
       if choice <= min:
         print("Input must be greater than %d", min)
@@ -41,22 +93,34 @@ def get_float(prompt, min, max):
         return choice
 
 
-def get_string(prompt, min, max):
+"""
+  Prompts the user to enter a string of a certain 
+  length, or an empty string. 
+"""
+def get_string(prompt, min, max, allowEmpty = False):
 
   while True:
     string = str(input(prompt))
-    if len(string) >= min:
-      if len(string) <= max:
-        return string
+    if allowEmpty and string == "":
+      return string
+    else:
+      if len(string) >= min:
+        if len(string) <= max:
+          return string
+        else:
+          print()
+          print("Input must be less than %d characters" % max)
       else:
         print()
-        print("Input must be less than %d characters" % max)
-    else:
-      print()
-      print("Input must be more than %d characters" % min)
+        print("Input must be more than %d characters" % min)
 
 
-def get_date(prompt):
+"""
+  Prompts the user to enter a data in year, month
+  day format. Empty dates are also allowed if allow
+  empty is set to true.
+"""
+def get_date(prompt, allowEmpty = False):
   
   print(prompt)
 
@@ -64,9 +128,9 @@ def get_date(prompt):
 
     print()
     now = datetime.datetime.now()
-    year = get_string("Year (1900-): ", 4, 4)
-    month = get_string("Month (1-12): ", 1, 2)
-    day = get_string("Day (1-31): ", 1, 2)
+    year = get_string("Year (1900-): ", 4, 4, allowEmpty = allowEmpty)
+    month = get_string("Month (1-12): ", 1, 2, allowEmpty = allowEmpty)
+    day = get_string("Day (1-31): ", 1, 2, allowEmpty = allowEmpty)
 
     entered_date = ("%s-%s-%s" % (year, month, day))
 
@@ -79,6 +143,9 @@ def get_date(prompt):
       return entered_date
 
 
+"""
+  Prompts user to enter a weight.
+"""
 def get_weight():
   
   print()
@@ -103,6 +170,9 @@ def get_weight():
     return pounds
 
 
+"""
+  Prompts user to enter a height.
+"""
 def get_height():
   
   print()
@@ -122,6 +192,9 @@ def get_height():
     return (feet * CM_TO_INCHES_RATIO * 12) + (inches * CM_TO_INCHES_RATIO)
 
 
+"""
+  Prompts the user to enter a sex
+"""
 def get_sex():
 
   while True:
@@ -130,6 +203,9 @@ def get_sex():
       return sex
 
 
+"""
+  Prompts the user to enter an activity rating.
+"""
 def get_activity_rating():
 
   print()
