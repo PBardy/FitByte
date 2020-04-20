@@ -137,8 +137,11 @@ def get_date(prompt, allowEmpty = False):
     try:
       datetime.datetime.strptime(entered_date, "%Y-%m-%d")
     except ValueError:
-      print("Date in incorrect format")
-      print() 
+      if allowEmpty:
+        return ""
+      else:
+        print("Date in incorrect format")
+        print() 
     else:
       return entered_date
 

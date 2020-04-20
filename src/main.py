@@ -32,8 +32,8 @@ def display_user_goals(id):
     interval = goal_obj.get_interval()
     table, tracked = get_all_data(id, metric)
     relevant = [val for val in tracked if val[0] > start and val[0] < end]
-    achieved = len([val for val in tracked if val[1] <= target]) > 0
-    data_completion = len(relevant) / interval
+    data_completion = (len(relevant) / interval) * 100
+    achieved = len([val for val in tracked if val[1] <= target]) > 0 and data_completion >= 100
     goal_obj.set_completion(data_completion)
     goal_obj.set_achieved(achieved)
     entries.append(goal_obj.get_properties())
@@ -133,7 +133,8 @@ def edit_user_goal(id):
     print()
     index = get_menu_choice(len(all_goals) - 1, min_choice = 0)
     goal = all_goals[index]
-    update_goal(goal)    
+    updated = update_goal(goal)   
+    update_goal_entry(updated) 
 
   else:
     print()
@@ -150,7 +151,20 @@ def cancel_user_goal(id):
   print("Cancel a goal")
   print()
 
-  display_user_goals(id)
+  all_goals = display_user_goals(id)
+
+  if len(all_goals) > 0:
+    print()
+    print("Index to cancel")
+    print()
+    index = get_menu_choice(len(all_goals) - 1, min_choice = 0)
+    goal = all_goals[index]
+    delete_goal_entry(goal)    
+
+  else:
+    print()
+    print("There are no goals to cancel")
+    print()
 
 
 """
@@ -286,7 +300,7 @@ def add_informatics_data(id):
     print()
     print("Add informatics data about")
     print()
-    choice, table = get_metric()
+    choice, table, name = get_metric()
     print()
 
     if choice == 8:
@@ -298,22 +312,22 @@ def add_informatics_data(id):
       value = get_calories()
 
     if choice == 2:
-      fat = get_float("Fat (grams): ", 0, 1000)
+      value = get_float("Fat (grams): ", 0, 1000)
 
     if choice == 3:
-      fibre = get_float("Fibre (grams): ", 0, 1000)
+      value = get_float("Fibre (grams): ", 0, 1000)
 
     if choice == 4:
-      protein = get_float("Protein (grams): ", 0, 1000)
+      value = get_float("Protein (grams): ", 0, 1000)
 
     if choice == 5:
-      salt = get_float("Salt (grams): ", 0, 1000)
+      value = get_float("Salt (grams): ", 0, 1000)
 
     if choice == 6:
-      sugar = get_float("Sugar (grams): ", 0, 1000)
+      value = get_float("Sugar (grams): ", 0, 1000)
 
     if choice == 7:
-      weight = get_weight()   
+      value = get_weight()   
 
     create_personal_informatics_entry(id, date, value, table)
 

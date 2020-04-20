@@ -15,6 +15,7 @@ DB_DATABASE = "fitbyte"
   Creates a connection to the database.
 """
 def connect():
+
   try:
     connection = mysql.connector.connect(
       host = DB_HOST_NAME, 
@@ -36,40 +37,53 @@ def connect():
 """
 def create_profile(id, first_name, last_name, dob, weight, height, sex, activity_rating):
 
-    sql = """
-      INSERT INTO profiles (account_id, first_name, last_name, DOB, current_weight, height, sex, activity_rating) 
-      VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """
+  sql = """
+    INSERT INTO profiles (account_id, first_name, last_name, DOB, current_weight, height, sex, activity_rating) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+  """
 
-    values = (str(id), str(first_name), str(last_name), str(dob), str(weight), str(height), str(sex), str(activity_rating))
+  values = (str(id), str(first_name), str(last_name), str(dob), str(weight), str(height), str(sex), str(activity_rating))
 
+  try:
     db = connect()
     cursor = db.cursor()
     cursor.execute(sql, values)
     db.commit()
-    db.close()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
-    return True
+  return True
+
 
 """
   Creates an account for a particular user.
 """
 def create_account(username, salt, hash):
 
-    sql = """
-      INSERT INTO accounts (username, password_salt, password_hash, date_created) 
-      VALUES (%s, %s, %s, CURDATE())
-    """
+  sql = """
+    INSERT INTO accounts (username, password_salt, password_hash, date_created) 
+    VALUES (%s, %s, %s, CURDATE())
+  """
 
-    values = (str(username), str(salt), str(hash))
+  values = (str(username), str(salt), str(hash))
 
+  try:
     db = connect()
     cursor = db.cursor()
     cursor.execute(sql, values)
     db.commit()
-    db.close()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
-    return cursor.lastrowid
+  return cursor.lastrowid
 
 
 """
@@ -85,49 +99,71 @@ def create_personal_informatics_entry(id, date, value, table):
 
   values = (str(id), str(date), str(value))
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql, values)
-  db.commit()
-  db.close()
-
-
-def change_account_details(id, username, salt, hash):
-
-    sql = """
-      UPDATE accounts
-      SET username = %s, password_salt = %s, password_hash = %s
-      WHERE accounts.account_id = %s;
-    """
-
-    values = (str(username), str(salt), str(hash), str(id))
-
+  try:
     db = connect()
     cursor = db.cursor()
     cursor.execute(sql, values)
     db.commit()
-    db.close()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
-    return True
+
+"""
+  Updates account details.
+"""
+def change_account_details(id, username, salt, hash):
+
+  sql = """
+    UPDATE accounts
+    SET username = %s, password_salt = %s, password_hash = %s
+    WHERE accounts.account_id = %s;
+  """
+
+  values = (str(username), str(salt), str(hash), str(id))
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql, values)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
+
+  return True
 
 
 def change_profile_details(id, first_name, last_name, dob, current_weight, height, sex, activity_rating):
 
-    sql = """
-      UPDATE profiles
-      SET first_name = %s, last_name = %s, dob = %s, current_weight = %s, height = %s, sex = %s, activity_rating = %s
-      WHERE profiles.account_id = %s;
-    """
+  sql = """
+    UPDATE profiles
+    SET first_name = %s, last_name = %s, dob = %s, current_weight = %s, height = %s, sex = %s, activity_rating = %s
+    WHERE profiles.account_id = %s;
+  """
 
-    values = (str(first_name), str(last_name), str(dob), str(current_weight), str(height), str(sex), str(activity_rating), str(id))
+  values = (str(first_name), str(last_name), str(dob), str(current_weight), str(height), str(sex), str(activity_rating), str(id))
 
+  try:
     db = connect()
     cursor = db.cursor()
     cursor.execute(sql, values)
     db.commit()
-    db.close()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
-    return True
+
+  return True
 
 
 """
@@ -136,23 +172,31 @@ def change_profile_details(id, first_name, last_name, dob, current_weight, heigh
 """
 def authenticate(username, password):
 
-    sql = """
-      SELECT account_id, password_hash 
-      FROM accounts
-      WHERE username = "%s"
-    """ % (username)
+  sql = """
+    SELECT account_id, password_hash 
+    FROM accounts
+    WHERE username = "%s"
+  """ % (username)
 
+  results = None
+
+  try:
     db = connect()
     cursor = db.cursor()
     cursor.execute(sql)
     results = cursor.fetchone()
-    db.close()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
-    if results != None:
-      if len(results) > 1:
-        hashed = results[1]
-        if bcrypt.checkpw(password.encode("utf8"), hashed.encode("utf8")):
-          return results[0]
+  if results != None:
+    if len(results) > 1:
+      hashed = results[1]
+      if bcrypt.checkpw(password.encode("utf8"), hashed.encode("utf8")):
+        return results[0]
 
 
 """
@@ -163,11 +207,19 @@ def get_account(id):
 
   sql = "SELECT * FROM accounts WHERE account_id = %s" % id
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql)
-  results = cursor.fetchone()
-  db.close()
+  results = None
+  
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchone()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
   return Account(results)
 
@@ -179,11 +231,19 @@ def get_profile(id):
 
   sql = "SELECT * FROM profiles WHERE account_id = %s" % id
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql)
-  results = cursor.fetchone()
-  db.close()
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchone()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
   return Profile(results)
 
@@ -211,8 +271,15 @@ def delete_account(id):
   cursor = db.cursor()
 
   for query in queries:
-    cursor.execute(query)
-    db.commit()
+    try:
+      cursor.execute(query)
+      db.commit()
+    except mysql.connector.Error as Error:
+      print()
+      print("A database error occurred")
+
+  if db.is_connected():
+    db.close()
 
   return True
 
@@ -226,13 +293,21 @@ def display_all_badges():
   print("All achievable badges")
   print()
 
-  query = "SELECT description FROM badges"
+  sql = "SELECT description FROM badges"
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(query)
-  results = cursor.fetchall()
-  db.close()
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchall()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
   print_badges(results)
 
@@ -256,15 +331,26 @@ def display_user_badges(id):
     AND user_badges.account_id = %s
   """ % id
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(query)
-  results = cursor.fetchall()
-  db.close()
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
   print_badges(results)
 
 
+"""
+  Retrieves all user goal data from the database.
+"""
 def get_user_goal_data(id):
   
   print()
@@ -276,11 +362,20 @@ def get_user_goal_data(id):
     WHERE account_id = %s
   """ % id
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(query)
-  results = cursor.fetchall()
-  db.close()
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(query)
+    results = cursor.fetchall()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
+
 
   return results
 
@@ -307,11 +402,16 @@ def create_user_goal(target, metric, start_date, end_date, interval, id):
 
   values = (str(target), str(metric), str(start_date), str(end_date), str(interval), str(id))
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql, values)
-  db.commit()
-  db.close()
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql, values)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
 
 """
@@ -326,11 +426,16 @@ def award_badge(id, badge_id):
 
   values = (str(id), str(badge_id))
 
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql, values)
-  db.commit()
-  db.close()
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql, values)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
 
 """
@@ -345,11 +450,18 @@ def get_all_data(id, table):
     WHERE account_id = %s
   """ % id
   
-  db = connect()
-  cursor = db.cursor()
-  cursor.execute(sql)
-  results = cursor.fetchall()
-  db.close()
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchall()
+  except mysql.connector.Error as Error:
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
 
   return table, results
 
@@ -359,4 +471,50 @@ def get_all_data(id, table):
   new values.
 """
 def update_goal_entry(goal):
-  pass
+  
+  sql = """
+    UPDATE current_goals 
+    SET target = %s, metric = %s, start_date = %s, end_date = %s, set_interval = %s
+    WHERE goal_id = %s
+  """
+
+  values = (
+    str(goal.get_target()), 
+    str(goal.get_metric()), 
+    str(goal.get_start_date()), 
+    str(goal.get_end_date()), 
+    str(goal.get_interval()), 
+    str(goal.get_entryid())
+  )
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql, values)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+    print("{}".format(Error))
+  finally:
+    if db.is_connected():
+      db.close()
+
+
+"""
+  Deletes a goal entry.
+"""
+def delete_goal_entry(goal):
+  
+  sql = """
+    DELETE FROM current_goals WHERE goal_id = %s
+  """ % goal.get_entryid()
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")

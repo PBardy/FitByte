@@ -1,5 +1,4 @@
 from input_validation import *
-from database import *
 
 class Goal:
 
@@ -47,7 +46,7 @@ class Goal:
     return self.__end_date
 
   def get_interval(self):
-    return self.__interval
+    return int(self.__interval)
 
   def get_set_interval(self):
     return self.get_interval()
@@ -80,7 +79,7 @@ class Goal:
     self.__end_date = end_date
 
   def set_interval(self, interval):
-    self.__interval
+    self.__interval = interval
 
   def set_completion(self, perc):
     self.__completion = perc
@@ -126,7 +125,7 @@ def update_goal(goal):
   # Prompt the user to edit the interval data
 
   print()
-  print("Interval")
+  interval = get_float("Interval: ", 0, 10, allowEmpty = True)
   print()
 
   # Update goal entry locally
@@ -137,8 +136,16 @@ def update_goal(goal):
   if metric != "":
     goal.set_metric(metric)
 
-  # Push changes to the database
+  if start_date != "":
+    goal.set_start_date(start_date)
 
+  if end_date != "":
+    goal.set_end_date(end_date)
+
+  if interval != "":
+    goal.set_interval(interval)
+
+  return goal
 
 
 """
