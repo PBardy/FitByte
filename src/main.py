@@ -270,7 +270,7 @@ def view_my_bmr(id):
 
   msj = mifflin_st_jeor(weight, height, age, sex)
   rhb = revised_harris_benedict(weight, height, age, sex)
-  cpd = calories_for_activity_level(activity_level)
+  cpd = calories_for_activity_level(msj, activity_level)
 
   print()
   print("Your BMR")

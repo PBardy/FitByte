@@ -28,18 +28,18 @@ def revised_harris_benedict(weight, height, age, sex):
   Returns the number of calories a person should consume daily to maintain
   their BMR for different activity levels.
 """
-def calories_for_activity_level(activity_level):
+def calories_for_activity_level(bmr, activity_level):
 
   if activity_level == 1:
-    return 2378
+    return bmr * 1.2
   if activity_level == 2:
-    return 2724
+    return bmr * 1.45
   if activity_level == 3:
-    return 2903
+    return bmr * 1.65
   if activity_level == 4:
-    return 3071
+    return bmr * 1.85
   if activity_level == 5:
-    return 3418
+    return bmr * 2.2
 
 
 """
