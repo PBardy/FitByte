@@ -76,4 +76,10 @@ def display_goals(goal_data):
     print("No goals to display")
     print()
   
+
+"""
+  Displays the leaderboard, ranked using a certain metric.
+"""
+def display_leaderboard(data, metric = False):
+  pass
   

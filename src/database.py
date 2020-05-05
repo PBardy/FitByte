@@ -518,3 +518,62 @@ def delete_goal_entry(goal):
   except mysql.connector.Error as Error:
     print()
     print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
+
+
+"""
+  Get leaderboard data
+"""
+
+def get_leaderboard_data():
+  
+  sql = """
+    SELECT first_name, last_name, goals_completed
+    FROM profiles
+  """
+
+  results = None
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchall()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally:
+    if db.is_connected():
+      db.close()
+
+  return results
+
+
+"""
+  Update a particular goal entry with
+  new values.
+"""
+def update_goals_completed(id, completed):
+  
+  sql = """
+    UPDATE profiles 
+    SET goals_completed = %s
+    WHERE account_id = %s
+  """
+
+  values = (str(completed), str(id))
+
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql, values)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+    print("{}".format(Error))
+  finally:
+    if db.is_connected():
+      db.close()

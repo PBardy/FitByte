@@ -42,6 +42,10 @@ def calories_for_activity_level(activity_level):
     return 3418
 
 
+"""
+  Sorts data by date and provides the data points
+  for the graphing program to plot.
+"""
 def get_data_points(results):
   table, data = results
   data.sort(key = lambda datapoint: datapoint[0])

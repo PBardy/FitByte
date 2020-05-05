@@ -120,7 +120,7 @@ def get_string(prompt, min, max, allowEmpty = False):
   day format. Empty dates are also allowed if allow
   empty is set to true.
 """
-def get_date(prompt, allowEmpty = False):
+def get_date(prompt, allowEmpty = False, allowFuture = True):
   
   print(prompt)
 
@@ -143,7 +143,14 @@ def get_date(prompt, allowEmpty = False):
         print("Date in incorrect format")
         print() 
     else:
-      return entered_date
+      if allowFuture:
+        return entered_date
+      else:
+        if datetime.datetime.strptime(entered_date, "%Y-%m-%d") > now:
+          print()
+          print("Dates cannot be in the future")
+        else:
+          return entered_date
 
 
 """

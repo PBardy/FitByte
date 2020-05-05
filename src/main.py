@@ -10,6 +10,27 @@ MAX_USERNAME_LENGTH = 32
 MAX_PASSWORD_LENGTH = 72
 MIN_PASSWORD_LENGTH = 6
 
+
+"""
+  Determines whether a goal has been completed.
+"""
+def get_completed_goals(id, goals):
+
+  completed = []
+
+  for goal in goals:
+    obj = make_goal(goal)
+    table, tracked = get_all_data(id, obj.get_metric())
+    if len(tracked) >= obj.get_interval():
+      for datapoint in tracked:
+        if datapoint[0] > obj.get_start_date() and datapoint[0] < obj.get_end_date():
+          if datapoint[1] <= obj.get_target():
+            completed.append(obj)
+            break
+
+  return completed
+
+
 """
   Displays user goals, including whether they
   have been achieved. 
@@ -41,6 +62,13 @@ def display_user_goals(id):
   display_goals(entries)
 
   return goal_objs
+
+
+"""
+  Displays the leaderboard option selection menu.
+"""
+def display_leaderboard_menu(id):
+  print(get_leaderboard_data())
 
 
 """
@@ -293,6 +321,46 @@ def view_my_graphs_menu(id):
     create_graph(get_data_points(get_all_data(id, metrics[metric - 1])))
 
 
+"""
+  Checks goal completion, which is then used
+  to awards badges and calculate the user's position
+  on the leaderboard.
+"""
+def update_account(id):
+
+  goal_data = get_user_goal_data(id)
+  completed = get_completed_goals(id, goal_data)
+  update_goals_completed(id, len(completed))
+
+  if len(completed) >= 100:
+    award_badge(id, badge_id=11)
+  if len(completed) >= 75:
+    award_badge(id, badge_id=10)
+  if len(completed) >= 50:
+    award_badge(id, badge_id=9)
+  if len(completed) >= 30:
+    award_badge(id, badge_id=8)
+  if len(completed) >= 25:
+    award_badge(id, badge_id=7)
+  if len(completed) >= 20:
+    award_badge(id, badge_id=6)
+  if len(completed) >= 15:
+    award_badge(id, badge_id=5)
+  if len(completed) >= 10:
+    award_badge(id, badge_id=4)
+  if len(completed) >= 5:
+    award_badge(id, badge_id=3)
+  if len(completed) >= 2:
+    award_badge(id, badge_id=2)
+  if len(completed) >= 1:
+    award_badge(id, badge_id=1)
+
+
+"""
+  Prompts user to choose a metric to add data to,
+  then prompts the user to state the data they recorded
+  the data, and what the data is, before storing this.
+"""
 def add_informatics_data(id):
   
   while True:
@@ -306,30 +374,26 @@ def add_informatics_data(id):
     if choice == 8:
       return
 
-    date = get_date("When did you record this data? ")
+    date = get_date("When did you record this data? ", allowFuture=False)
 
     if choice == 1:
       value = get_calories()
-
     if choice == 2:
       value = get_float("Fat (grams): ", 0, 1000)
-
     if choice == 3:
       value = get_float("Fibre (grams): ", 0, 1000)
-
     if choice == 4:
       value = get_float("Protein (grams): ", 0, 1000)
-
     if choice == 5:
       value = get_float("Salt (grams): ", 0, 1000)
-
     if choice == 6:
       value = get_float("Sugar (grams): ", 0, 1000)
-
     if choice == 7:
       value = get_weight()   
 
     create_personal_informatics_entry(id, date, value, table)
+    update_account(id)
+
 
 """ 
   Allows user to navigate to the view all data,
@@ -363,6 +427,10 @@ def my_personal_data_menu(id):
       return
 
 
+"""
+  Provides a menu to allow user to select
+  which sub-menu they wish to progress to.
+"""
 def my_goals_menu(id):
   
   while True:
@@ -395,7 +463,7 @@ def my_goals_menu(id):
     if choice == 6:
       cancel_user_goal(id)
     if choice == 7:
-      display_leadboard(id)
+      display_leaderboard_menu(id)
     if choice == 8:
       return
       

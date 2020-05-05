@@ -11,6 +11,7 @@ class Profile:
     self.__height = entry[6]
     self.__sex = entry[7]
     self.__activity_rating = entry[8]
+    self.__goals_completed = entry[9]
 
   def get_first_name(self):
     return str(self.__first_name)
@@ -59,3 +60,10 @@ class Profile:
       print("Cannot get activity rating.")
     else:
       return rating
+  
+  def get_goals_completed(self):
+    try:
+      goals_completed = int(self.__goals_completed)
+    except ValueError:
+      print()
+      print("Cannot get goals completed")
