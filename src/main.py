@@ -308,6 +308,7 @@ def view_my_graphs_menu(id):
     if metric == 8:
       return
     
+    """
     print()
     print("Display graph with a")
     print()
@@ -317,7 +318,8 @@ def view_my_graphs_menu(id):
     print("4. Yearly breakdown")
 
     timescale = get_menu_choice(4)
-
+    """
+    
     create_graph(get_data_points(get_all_data(id, metrics[metric - 1])))
 
 
@@ -479,10 +481,11 @@ def main_menu(id):
     print("2. Edit profile details")
     print("3. My personal informatics data")
     print("4. My goals")
-    print("5. Exit")
+    print("5. Delete account")
+    print("6. Exit")
     print()
 
-    choice = get_menu_choice(5)
+    choice = get_menu_choice(6)
 
     if choice == 1: 
       edit_account_menu(id)
@@ -493,6 +496,9 @@ def main_menu(id):
     if choice == 4:
       my_goals_menu(id)
     if choice == 5:
+      delete_account(id)
+      return
+    if choice == 6:
       return 
 
 
@@ -538,7 +544,7 @@ def create_profile_menu(id):
 
   first_name = get_string("First name: ", 0, MAX_NAME_LENGTH)
   last_name = get_string("Last name: ", 0, MAX_NAME_LENGTH)
-  dob = get_date("Date of birth: ")
+  dob = get_date("Date of birth: ", allowFuture=False)
   current_weight = get_weight()
   height = get_height()
   sex = get_sex()
@@ -553,7 +559,7 @@ def create_account_menu():
   print("Create your account.")
   print()
 
-  username = get_string("Username: ", 0, MAX_NAME_LENGTH)
+  username = get_string("Username: ", 0, MAX_USERNAME_LENGTH)
   password = get_string("Password: ", MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH)
   salt, hash = get_hash_and_salt(password)
 

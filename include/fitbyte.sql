@@ -72,7 +72,16 @@ CREATE TABLE `badges` (
 
 INSERT INTO `badges` (`badge_id`, `description`) VALUES
 (1, 'First Goal - Successfully complete one goal'),
-(2, 'Goals, goals, goals - Successfully complete 5 goals');
+(2, 'Doubling up - Successfully complete 2 goals'),
+(3, 'Streak - Successfully complete 5 goals'),
+(4, 'Goal getter - Successfully complete 10 goals'),
+(5, 'Expert - Successfully complete 15 goals'),
+(6, 'Dedicated - Successfully complete 20 goals'),
+(7, 'Motivated - Successfully complete 25 goals'),
+(8, 'Addicted - Successfully complete 35 goals'),
+(9, 'Bullseye - Successfully complete 50 goal'),
+(10, 'Supreme - Successfully complete 75 goals'),
+(11, 'Godly - Successfully complete 100 goals');
 
 -- --------------------------------------------------------
 
@@ -151,7 +160,8 @@ CREATE TABLE `profiles` (
   `current_weight` float NOT NULL,
   `height` float NOT NULL,
   `sex` char(1) NOT NULL,
-  `activity_rating` int(11) NOT NULL
+  `activity_rating` int(11) NOT NULL,
+  `goals_completed` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

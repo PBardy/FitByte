@@ -253,33 +253,19 @@ def get_profile(id):
 """
 def delete_account(id):
   
-  queries = [
-    "DELETE FROM accounts WHERE account_id = %s;" % id,
-    "DELETE FROM achieved_badges WHERE account_id = %s;" % id,
-    "DELETE FROM current_goals WHERE account_id = %s;" % id,
-    "DELETE FROM energy_intake WHERE account_id = %s;" % id,
-    "DELETE FROM fat_intake WHERE account_id = %s;" % id,
-    "DELETE FROM fibre_intake WHERE account_id = %s;" % id,
-    "DELETE FROM profiles WHERE account_id = %s;" % id,
-    "DELETE FROM protein_intake WHERE account_id = %s;" % id,
-    "DELETE FROM salt_intake WHERE account_id = %s;" % id,
-    "DELETE FROM sugar_intake WHERE account_id = %s;" % id,
-    "DELETE FROM weight WHERE account_id = %s;" % id,
-  ]
+  sql = "DELETE FROM accounts WHERE account_id = %s" % id
 
-  db = connect()
-  cursor = db.cursor()
-
-  for query in queries:
-    try:
-      cursor.execute(query)
-      db.commit()
-    except mysql.connector.Error as Error:
-      print()
-      print("A database error occurred")
-
-  if db.is_connected():
-    db.close()
+  try:
+    db = connect()
+    cursor = db.cursor()
+    cursor.execute(sql)
+    db.commit()
+  except mysql.connector.Error as Error:
+    print()
+    print("A database error occurred")
+  finally: 
+    if db.is_connected():
+      db.close()
 
   return True
 
